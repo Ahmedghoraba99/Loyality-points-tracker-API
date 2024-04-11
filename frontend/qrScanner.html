@@ -1,0 +1,268 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta http-equiv="Access-Control-Allow-Origin" content="*" />
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>QR Code Scanner</title>
+    <style>
+      /* Common styles for both touch and non-touch devices */
+      body {
+        font-family: Arial, sans-serif;
+        background-color: #f4f4f4;
+        text-align: center;
+        margin: 20px;
+      }
+
+      h1 {
+        color: #333;
+      }
+
+      #qr-reader {
+        width: 100%;
+        max-width: 500px;
+        height: auto;
+        margin: 20px auto;
+        border: 2px solid #3498db;
+      }
+
+      #qr-reader-results {
+        margin-top: 20px;
+        color: #333;
+      }
+
+      label {
+        display: block;
+        margin-top: 10px;
+        color: #333;
+      }
+
+      input {
+        width: 100%;
+        padding: 8px;
+        margin-top: 5px;
+        margin-bottom: 15px;
+        box-sizing: border-box;
+      }
+
+      /* Styling for the input fields */
+      input[type="text"] {
+        border: 1px solid #ccc;
+        border-radius: 4px;
+      }
+
+      /* Styling for the QR code scanner button */
+      .html5-qr-code button {
+        background-color: #3498db;
+        color: #fff;
+        padding: 10px;
+        border: none;
+        border-radius: 4px;
+        cursor: pointer;
+        transition: background-color 0.3s ease;
+      }
+
+      .html5-qr-code button:hover {
+        background-color: #2980b9;
+      }
+
+      /* Styles for touch screen devices */
+      @media (pointer: coarse) {
+        input {
+          font-size: 16px;
+        }
+      }
+
+      /* Styling for the camera selector buttons */
+      .html5-qr-code select {
+        padding: 8px;
+        margin-top: 5px;
+        border: 1px solid #ccc;
+        border-radius: 4px;
+        box-sizing: border-box;
+      }
+
+      .html5-qr-code .camera-selector-container {
+        margin-top: 10px;
+        display: flex;
+        justify-content: center;
+        align-items: center;
+      }
+
+      /* Styling for the submit button */
+      #submit-btn {
+        background-color: #4caf50;
+        color: #fff;
+        padding: 10px;
+        border: none;
+        border-radius: 4px;
+        cursor: pointer;
+        transition: background-color 0.3s ease;
+      }
+
+      #submit-btn:hover {
+        background-color: #45a049;
+      }
+
+      #deduct-btn {
+        background-color: #e74c3c;
+        color: #fff;
+        padding: 10px;
+        margin-top: 10px; /* Add some margin to separate it from the submit button */
+        border: none;
+        border-radius: 4px;
+        cursor: pointer;
+        transition: background-color 0.3s ease;
+      }
+
+      #deduct-btn:hover {
+        background-color: #c0392b;
+      }
+    </style>
+  </head>
+
+  <body>
+    <h1>QR Code Scanner</h1>
+
+    <div id="qr-reader"></div>
+    <div id="qr-reader-results"></div>
+
+    <label for="coustmer-id">Customer ID:</label>
+    <input type="text" id="coustmer-id" />
+
+    <label for="phone">Phone:</label>
+    <input type="text" id="phone" />
+
+    <label for="points">Points:</label>
+    <input type="text" id="points" />
+
+    <!-- Add a submit button -->
+    <button id="submit-btn" onclick="submitData()">Add Points</button>
+    <button id="deduct-btn" onclick="deductPoints()">Deduct Points</button>
+
+    <script src="https://unpkg.com/html5-qrcode"></script>
+    <script>
+      var resultContainer = document.getElementById("qr-reader-results");
+      var lastResult,
+        countResults = 0;
+
+      function onScanSuccess(decodedText, decodedResult) {
+        if (decodedText !== lastResult) {
+          ++countResults;
+          lastResult = decodedText;
+
+          // Extract user information from the JSON in the QR code
+          var coustmerID = extractUserId(decodedText);
+          var coustmerPhone = extractUserPhone(decodedText);
+          var coustmerName = extractUserName(decodedText);
+
+          // Get points from the input field
+          var pointsInput = document.getElementById("points");
+          var points = pointsInput.value;
+
+          // Display the result on the page
+          resultContainer.innerHTML = `<p>Scan result ${countResults}: Customer ID: ${coustmerID}, Name: ${coustmerName}, Phone: ${coustmerPhone}, Points: ${points}</p>`;
+
+          // Update the input fields
+          document.getElementById("phone").value = coustmerPhone;
+          document.getElementById("coustmer-id").value = coustmerID;
+          // Automatically submit the data to the server when scanned
+          //submitData();
+        }
+      }
+
+      function extractUserId(decodedText) {
+        try {
+          var jsonData = JSON.parse(decodedText);
+          return jsonData.ID || "";
+        } catch (error) {
+          console.error("Error parsing JSON from QR code:", error);
+          return "";
+        }
+      }
+
+      function extractUserPhone(decodedText) {
+        try {
+          var jsonData = JSON.parse(decodedText);
+          return jsonData.userPhone || "";
+        } catch (error) {
+          console.error("Error parsing JSON from QR code:", error);
+          return "";
+        }
+      }
+
+      function extractUserName(decodedText) {
+        try {
+          var jsonData = JSON.parse(decodedText);
+          return jsonData.userName || "";
+        } catch (error) {
+          console.error("Error parsing JSON from QR code:", error);
+          return "";
+        }
+      }
+
+      function submitData() {
+        var coustmerID = document.getElementById("coustmer-id").value;
+        var coustmerName = document.getElementById("coustmer-id").value;
+        var coustmerPhone = document.getElementById("phone").value;
+        var points = document.getElementById("points").value;
+
+        // Send the scanned data to the server using fetch (when online)
+        fetch(`/api/addpoints/`, {
+          method: "PUT",
+          headers: {
+            "Content-Type": "application/json",
+          },
+          body: JSON.stringify({
+            idOrPhone: coustmerPhone,
+            points: points,
+          }),
+        })
+          .then((response) => response.json())
+          .then((data) => {
+            console.log("Success:", data);
+            alert("Data submitted successfully!");
+          })
+          .catch((error) => {
+            console.error("Error:", error);
+            alert("Error submitting data: " + error.message);
+          });
+      }
+
+      function deductPoints() {
+        var coustmerID = document.getElementById("coustmer-id").value;
+        var coustmerName = document.getElementById("coustmer-id").value;
+        var coustmerPhone = document.getElementById("phone").value;
+        var points = document.getElementById("points").value;
+
+        // Send the deducted data to the server using fetch (when online)
+        fetch(`./api/deductPoints/`, {
+          method: "PUT",
+          headers: {
+            "Content-Type": "application/json",
+          },
+          body: JSON.stringify({
+            idOrPhone: coustmerPhone,
+            points: points,
+          }),
+        })
+          .then((response) => response.json())
+          .then((data) => {
+            console.log("Success:", data);
+            alert("Points deducted successfully!");
+          })
+          .catch((error) => {
+            console.error("Error:", error);
+            alert("Error deducting points: " + error.message);
+          });
+      }
+
+      var html5QrcodeScanner = new Html5QrcodeScanner("qr-reader", {
+        fps: 10,
+        qrbox: 250,
+        cameraId: "back", // Set cameraId to "back" for the back camera
+      });
+      html5QrcodeScanner.render(onScanSuccess);
+    </script>
+  </body>
+</html>

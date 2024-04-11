@@ -1,0 +1,6 @@
+backend/.vs
+backend/node_modules
+backend/dist
+backend/src/.g
+backend/package-lock.json
+backend/docker-compose.yml

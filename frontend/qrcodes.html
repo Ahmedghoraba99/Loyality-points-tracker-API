@@ -1,0 +1,219 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Your Page Title</title>
+    <style>
+        body {
+            margin: 0;
+            font-family: Arial, sans-serif;
+        }
+
+        #navbar {
+            background-color: #333;
+            height: 100vh;
+            width: 200px;
+            position: fixed;
+            left: 0;
+            top: 0;
+            padding-top: 20px;
+            color: #fff;
+        }
+
+        #navbar a {
+            display: block;
+            padding: 15px;
+            text-decoration: none;
+            color: #fff;
+            text-align: center;
+            border-bottom: 1px solid #555;
+        }
+
+        #navbar a:hover {
+            background-color: #555;
+        }
+
+        #content {
+            margin-left: 200px;
+            padding: 20px;
+        }
+
+        #logo {
+            text-align: center;
+            margin-bottom: 20px;
+        }
+
+        /* Collapsible Section Styles */
+        .collapsible {
+            cursor: pointer;
+            padding: 15px;
+            width: 100%;
+            border: none;
+            text-align: left;
+            outline: none;
+            font-size: 16px;
+            background-color: #555;
+            color: #fff;
+        }
+
+        .content {
+            padding: 0 18px;
+            display: none;
+            overflow: hidden;
+            background-color: #f1f1f1;
+        }
+
+        .content a {
+            display: block;
+            padding: 10px;
+            text-decoration: none;
+            color: #333;
+        }
+
+        .content a:hover {
+            background-color: #ddd;
+        }
+
+        /* Form Section Styles */
+        .form-section {
+            display: none;
+            margin-top: 20px;
+        }
+
+        .form-section input {
+            width: 100%;
+            padding: 8px;
+            box-sizing: border-box;
+            margin-bottom: 10px;
+        }
+
+        .form-section button {
+            background-color: #3498db;
+            color: #fff;
+            padding: 10px;
+            border: none;
+            border-radius: 4px;
+            cursor: pointer;
+            transition: background-color 0.3s ease;
+        }
+
+        .form-section button:hover {
+            background-color: #2980b9;
+        }
+
+        /* QR Code Display Styles */
+        #qrCode {
+            margin-top: 20px;
+            display: none;
+        }
+    </style>
+</head>
+
+<body>
+
+    <!-- Navigation Bar -->
+    <div id="navbar">
+        <a href="#users">Users</a>
+        <button class="collapsible" onclick="toggleCollapsible('qrcodesSection')">QR Codes</button>
+        <div class="content" id="qrcodesSection">
+            <a href="#" onclick="showForm('id')">Generate by ID</a>
+            <a href="#" onclick="showForm('phone')">Generate by Phone</a>
+        </div>
+    </div>
+
+    <!-- Content Area -->
+    <div id="content">
+        <!-- Logo Placeholder -->
+        <div id="logo">
+            <img src="your_logo_placeholder.png" alt="Logo">
+        </div>
+
+        <!-- Form Section -->
+        <div id="idForm" class="form-section">
+            <input type="text" id="idInput" placeholder="Enter ID">
+            <button onclick="submitForm('id')">Submit</button>
+        </div>
+
+        <div id="phoneForm" class="form-section">
+            <input type="text" id="phoneInput" placeholder="Enter Phone">
+            <button onclick="submitForm('phone')">Submit</button>
+        </div>
+
+        <!-- QR Code Display -->
+        <div id="qrCode">
+            <img id="qrCodeImage" src="" alt="QR Code">
+            <p id="qrCodeStatus"></p>
+        </div>
+
+        <!-- Your page content goes here -->
+
+    </div>
+
+    <script>
+        function toggleCollapsible(sectionId) {
+            var section = document.getElementById(sectionId);
+            if (section.style.display === "block") {
+                section.style.display = "none";
+            } else {
+                section.style.display = "block";
+            }
+        }
+
+        function showForm(formType) {
+            var idForm = document.getElementById('idForm');
+            var phoneForm = document.getElementById('phoneForm');
+            var qrCodeSection = document.getElementById('qrCode');
+
+            // Hide QR code display
+            qrCodeSection.style.display = 'none';
+
+            if (formType === 'id') {
+                idForm.style.display = 'block';
+                phoneForm.style.display = 'none';
+            } else if (formType === 'phone') {
+                idForm.style.display = 'none';
+                phoneForm.style.display = 'block';
+            }
+        }
+
+        function submitForm(formType) {
+            var input;
+            if (formType === 'id') {
+                input = document.getElementById('idInput').value;
+            } else if (formType === 'phone') {
+                input = document.getElementById('phoneInput').value;
+            }
+
+            // Simulating server response (replace with actual fetch call)
+            var serverResponse = {
+                success: true, // or false
+                imageUrl: "https://example.com/qr-code.png",
+                message: "QR code generated successfully!" // or "No QR code for this person"
+            };
+
+            // Display QR code and status message
+            displayQRCode(serverResponse);
+        }
+
+        function displayQRCode(response) {
+            var qrCodeSection = document.getElementById('qrCode');
+            var qrCodeImage = document.getElementById('qrCodeImage');
+            var qrCodeStatus = document.getElementById('qrCodeStatus');
+
+            if (response.success) {
+                // Display QR code image
+                qrCodeImage.src = response.imageUrl;
+                qrCodeStatus.textContent = response.message;
+                qrCodeSection.style.display = 'block';
+            } else {
+                // Display status message for failure
+                qrCodeStatus.textContent = response.message;
+                qrCodeSection.style.display = 'block';
+            }
+        }
+    </script>
+</body>
+
+</html>

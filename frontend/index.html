@@ -1,0 +1,71 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Your Navbar</title>
+    <link rel="stylesheet" href="./styles/index.css" />
+  </head>
+  <body>
+    <!-- Navbar -->
+    <nav>
+      <!-- Logo -->
+      <a href="/" style="background-color: #4caf50; padding: 10px">
+        <img
+          src="your-logo.png"
+          alt="Logo"
+          style="max-width: 100%; height: auto"
+        />
+      </a>
+
+      <!-- Menu -->
+      <ul class="submenu">
+        <li><a href="#">Home</a></li>
+      </ul>
+
+      <!-- Customers Submenu -->
+      <ul class="submenu" id="customers-menu">
+        <li>
+          <a href="#" onclick="toggleDropdown('customers-submenu')"
+            >Customers</a
+          >
+          <ul class="submenu" id="customers-submenu">
+            <li><a href="/newUser">New Customer</a></li>
+            <li><a href="/viewUsers">View Customers</a></li>
+            <li><a href="#">Update Customer</a></li>
+            <li><a href="#">Delete Customers</a></li>
+          </ul>
+        </li>
+      </ul>
+
+      <!-- QR Codes Submenu -->
+      <ul class="submenu" id="qrcodes-menu">
+        <li>
+          <a href="#" onclick="toggleDropdown('qrcodes-submenu')">QR Codes</a>
+          <ul class="submenu" id="qrcodes-submenu">
+            <li><a href="#">Generate by ID</a></li>
+            <li><a href="#">Generate by Phone</a></li>
+          </ul>
+        </li>
+      </ul>
+    </nav>
+
+    <!-- Content -->
+    <div style="margin-left: 250px; padding: 20px">
+      <!-- Your main content goes here -->
+      <p>This is your main content area.</p>
+    </div>
+
+    <script>
+      //Navbar logic
+      function toggleDropdown(dropdownId) {
+        var dropdown = document.getElementById(dropdownId);
+        if (dropdown.style.display === "block") {
+          dropdown.style.display = "none";
+        } else {
+          dropdown.style.display = "block";
+        }
+      }
+    </script>
+  </body>
+</html>

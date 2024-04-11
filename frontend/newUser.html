@@ -1,0 +1,127 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Your Navbar</title>
+    <link rel="stylesheet" href="./styles/index.css" />
+    <link rel="stylesheet" href="./styles/newUser.css" />
+  </head>
+  <body>
+    <!-- Navbar -->
+    <nav>
+      <!-- Logo -->
+      <a href="/" style="background-color: #4caf50; padding: 10px">
+        <img
+          src="your-logo.png"
+          alt="Logo"
+          style="max-width: 100%; height: auto"
+        />
+      </a>
+
+      <!-- Menu -->
+      <ul class="submenu">
+        <li><a href="#">Home</a></li>
+      </ul>
+
+      <!-- Customers Submenu -->
+      <ul class="submenu" id="customers-menu">
+        <li>
+          <a href="#" onclick="toggleDropdown('customers-submenu')"
+            >Customers</a
+          >
+          <ul class="submenu" id="customers-submenu">
+            <li><a href="/newUser">New Customer</a></li>
+            <li><a href="#">View Customers</a></li>
+            <li><a href="#">Update Customer</a></li>
+            <li><a href="#">Delete Customers</a></li>
+          </ul>
+        </li>
+      </ul>
+
+      <!-- QR Codes Submenu -->
+      <ul class="submenu" id="qrcodes-menu">
+        <li>
+          <a href="#" onclick="toggleDropdown('qrcodes-submenu')">QR Codes</a>
+          <ul class="submenu" id="qrcodes-submenu">
+            <li><a href="#">Generate by ID</a></li>
+            <li><a href="#">Generate by Phone</a></li>
+          </ul>
+        </li>
+      </ul>
+    </nav>
+
+    <!-- Content -->
+    <div class="content">
+      <form class="user-form">
+        <h2>New User</h2>
+        <label for="name">Name:</label>
+        <input type="text" id="name" name="name" required />
+
+        <label for="phone">Phone:</label>
+        <input type="tel" id="phone" name="phone" required />
+
+        <label for="points">Points:</label>
+        <input type="number" id="points" name="points" required />
+
+        <label>VIP:</label>
+        <label for="vip-true">True</label>
+        <input type="radio" id="vip-true" name="vip" value="true" />
+        <label for="vip-false">False</label>
+        <input type="radio" id="vip-false" name="vip" value="false" checked />
+
+        <button type="button" onclick="submitData()">Submit</button>
+      </form>
+    </div>
+
+    <script>
+      // Navbar logic
+      function toggleDropdown(dropdownId) {
+        var dropdown = document.getElementById(dropdownId);
+        if (dropdown.style.display === "block") {
+          dropdown.style.display = "none";
+        } else {
+          dropdown.style.display = "block";
+        }
+      }
+
+      function submitData() {
+        // Collect form input values
+        var coustmerName = document.getElementById("name").value;
+        var coustmerPhone = document.getElementById("phone").value;
+        var points = document.getElementById("points").value;
+        var vipValue = document.querySelector(
+          'input[name="vip"]:checked'
+        ).value;
+
+        // Send data using fetch
+        fetch("./api/users", {
+          method: "POST",
+          headers: {
+            "Content-Type": "application/json",
+          },
+          body: JSON.stringify({
+            name: coustmerName,
+            phone: coustmerPhone,
+            vip: vipValue,
+            points: points,
+          }),
+        })
+          .then((response) => {
+            if (!response.ok) {
+              throw new Error("Network response was not ok");
+            }
+            return response.json();
+          })
+          .then((data) => {
+            console.log("Success:", data);
+            alert("Data submitted successfully!");
+          })
+          .catch((error) => {
+            console.error("Error:", error);
+            alert("Error submitting data: " + error.message);
+          });
+      }
+    </script>
+  </body>
+</html>

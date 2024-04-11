@@ -1,0 +1,189 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Your Navbar</title>
+    <link rel="stylesheet" href="../styles/index.css" />
+    <link rel="stylesheet" href="../styles/userStyles/newUser.css" />
+    <style>
+      /* Content styles */
+      .content {
+        margin-left: 250px;
+        padding: 20px;
+        background-color: #f4f4f4;
+      }
+
+      /* Table styles */
+      .customer-table {
+        width: 100%;
+        border-collapse: collapse;
+        margin-top: 20px;
+      }
+
+      .customer-table th,
+      .customer-table td {
+        border: 1px solid #ddd;
+        padding: 8px;
+        text-align: left;
+      }
+
+      .customer-table th {
+        background-color: #4caf50;
+        color: white;
+      }
+
+      /* Button styles */
+      #view-customers-button {
+        background-color: #4caf50;
+        color: #fff;
+        padding: 10px 15px;
+        border: none;
+        border-radius: 4px;
+        cursor: pointer;
+        margin-bottom: 20px;
+      }
+
+      #view-customers-button:hover {
+        background-color: #45a049;
+      }
+    </style>
+  </head>
+  <body>
+    <!-- Navbar -->
+    <nav>
+      <!-- Logo -->
+      <a href="/" style="background-color: #4caf50; padding: 10px">
+        <img
+          src="your-logo.png"
+          alt="Logo"
+          style="max-width: 100%; height: auto"
+        />
+      </a>
+
+      <!-- Menu -->
+      <ul class="submenu">
+        <li><a href="#">Home</a></li>
+      </ul>
+
+      <!-- Customers Submenu -->
+      <ul class="submenu" id="customers-menu">
+        <li>
+          <a href="#" onclick="toggleDropdown('customers-submenu')"
+            >Customers</a
+          >
+          <ul class="submenu" id="customers-submenu">
+            <li><a href="/newUser">New Customer</a></li>
+            <li><a href="/viewUsers">View Customers</a></li>
+            <li><a href="#">Update Customer</a></li>
+            <li><a href="#">Delete Customers</a></li>
+          </ul>
+        </li>
+      </ul>
+
+      <!-- QR Codes Submenu -->
+      <ul class="submenu" id="qrcodes-menu">
+        <li>
+          <a href="#" onclick="toggleDropdown('qrcodes-submenu')">QR Codes</a>
+          <ul class="submenu" id="qrcodes-submenu">
+            <li><a href="#">Generate by ID</a></li>
+            <li><a href="#">Generate by Phone</a></li>
+          </ul>
+        </li>
+      </ul>
+    </nav>
+
+    <!-- Content -->
+    <div class="content">
+      <button id="view-customers-button" onclick="fetchAndDisplayCustomers()">
+        View Customers
+      </button>
+
+      <!-- View Customers Section -->
+      <div id="view-customers-section" style="display: none">
+        <h2>Customer List</h2>
+        <table class="customer-table" id="customer-list"></table>
+      </div>
+    </div>
+
+    <script>
+      // Navbar logic
+      function toggleDropdown(dropdownId) {
+        var dropdown = document.getElementById(dropdownId);
+        if (dropdown.style.display === "block") {
+          dropdown.style.display = "none";
+        } else {
+          dropdown.style.display = "block";
+          if (dropdownId === "customers-submenu") {
+            // Fetch and display customers when submenu is opened
+            fetchAndDisplayCustomers();
+          }
+        }
+      }
+
+      function fetchAndDisplayCustomers() {
+        // Fetch the list of customers
+        fetch("./api/users", {
+          method: "GET",
+          headers: {
+            "Content-Type": "application/json",
+          },
+        })
+          .then((response) => {
+            if (!response.ok) {
+              throw new Error("Network response was not ok");
+            }
+            return response.json();
+          })
+          .then((data) => {
+            // Display the list of customers
+            displayCustomers(data);
+          })
+          .catch((error) => {
+            console.error("Error:", error);
+            alert("Error fetching customer data: " + error.message);
+          });
+      }
+
+      function displayCustomers(customers) {
+        // Get the customer list container
+        var customerListContainer = document.getElementById("customer-list");
+        var viewCustomersSection = document.getElementById(
+          "view-customers-section"
+        );
+
+        // Show the View Customers section
+        viewCustomersSection.style.display = "block";
+
+        // Clear previous customer list
+        customerListContainer.innerHTML = "";
+
+        // Create the table header
+        var headerRow = document.createElement("tr");
+        var headerCells = ["ID", "Name", "Phone", "VIP", "Points"];
+        headerCells.forEach((header) => {
+          var th = document.createElement("th");
+          th.textContent = header;
+          headerRow.appendChild(th);
+        });
+        customerListContainer.appendChild(headerRow);
+
+        // Populate the table with customer data
+        customers.forEach((customer) => {
+          var row = document.createElement("tr");
+
+          // Iterate over customer properties and create cells
+          for (const key in customer) {
+            if (Object.hasOwnProperty.call(customer, key)) {
+              var cell = document.createElement("td");
+              cell.textContent = customer[key];
+              row.appendChild(cell);
+            }
+          }
+
+          customerListContainer.appendChild(row);
+        });
+      }
+    </script>
+  </body>
+</html>

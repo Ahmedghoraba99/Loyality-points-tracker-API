@@ -1,0 +1,173 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Your Navbar</title>
+    <link rel="stylesheet" href="./styles/index.css" />
+    <link rel="stylesheet" href="./styles/newUser.css" />
+  </head>
+  <style>
+    /* Styling for the user cards */
+    .user-card {
+      background-color: #fff;
+      border: 1px solid #e1e1e1;
+      border-radius: 8px;
+      padding: 16px;
+      margin: 16px;
+      width: 300px;
+      box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+      transition: transform 0.3s ease-in-out;
+
+      /* Hover effect */
+      &:hover {
+        transform: scale(1.05);
+      }
+
+      p {
+        margin: 8px 0;
+        font-size: 14px;
+        color: #333;
+      }
+
+      /* ID styling */
+      p:first-child {
+        font-weight: bold;
+        color: #4caf50;
+        font-size: 18px;
+      }
+    }
+  </style>
+  <body>
+    <!-- Navbar -->
+    <nav>
+      <!-- Logo -->
+      <a href="/" style="background-color: #4caf50; padding: 10px">
+        <img
+          src="your-logo.png"
+          alt="Logo"
+          style="max-width: 100%; height: auto"
+        />
+      </a>
+
+      <!-- Menu -->
+      <ul class="submenu">
+        <li><a href="#">Home</a></li>
+      </ul>
+
+      <!-- Customers Submenu -->
+      <ul class="submenu" id="customers-menu">
+        <li>
+          <a href="#" onclick="toggleDropdown('customers-submenu')"
+            >Customers</a
+          >
+          <ul class="submenu" id="customers-submenu">
+            <li><a href="/newUser">New Customer</a></li>
+            <li><a href="#">View Customers</a></li>
+            <li><a href="#">Update Customer</a></li>
+            <li><a href="#">Delete Customers</a></li>
+          </ul>
+        </li>
+      </ul>
+
+      <!-- QR Codes Submenu -->
+      <ul class="submenu" id="qrcodes-menu">
+        <li>
+          <a href="#" onclick="toggleDropdown('qrcodes-submenu')">QR Codes</a>
+          <ul class="submenu" id="qrcodes-submenu">
+            <li><a href="#">Generate by ID</a></li>
+            <li><a href="#">Generate by Phone</a></li>
+          </ul>
+        </li>
+      </ul>
+    </nav>
+
+    <!-- Content -->
+    <div class="content">
+      <form class="user-form">
+        <h2>Search for user</h2>
+        <label for="input">User Input:</label>
+        <input type="text" id="input" name="name" required />
+
+        <label for="criteria">Select Criteria:</label>
+        <select id="criteria">
+          <option value="name">Name</option>
+          <option value="phone">Phone</option>
+          <option value="id">ID</option>
+        </select>
+
+        <button type="button" onclick="submitData()">Submit</button>
+      </form>
+
+      <!-- Container for displaying user cards -->
+      <div id="user-cards-container"></div>
+    </div>
+
+    <script>
+      // Navbar logic
+      function toggleDropdown(dropdownId) {
+        var dropdown = document.getElementById(dropdownId);
+        if (dropdown.style.display === "block") {
+          dropdown.style.display = "none";
+        } else {
+          dropdown.style.display = "block";
+        }
+      }
+
+      function submitData() {
+        // Collect form input values
+        var searchInput = document.getElementById("input").value;
+        var searchCriteria = document.getElementById("criteria").value;
+
+        // Send data using fetch
+        fetch("./api/users/" + searchInput)
+          .then((response) => {
+            if (!response.ok) {
+              throw new Error("Network response was not ok");
+            }
+            return response.json();
+          })
+          .then((data) => {
+            console.log(data);
+            // Render user cards based on the fetched data
+            renderUserCards(data);
+          })
+          .catch((error) => {
+            console.error("Error:", error);
+            alert("Error submitting data: " + error.message);
+          });
+      }
+
+      function renderUserCards(user) {
+        var userCardsContainer = document.getElementById(
+          "user-cards-container"
+        );
+
+        // Clear previous user cards
+        userCardsContainer.innerHTML = "";
+
+        // Check if the response is an object
+        if (typeof user === "object") {
+          var userCard = document.createElement("div");
+          userCard.classList.add("user-card");
+
+          // Create HTML for user card
+          userCard.innerHTML = `
+      <p>ID: ${user.id}</p>
+      <p>Name: ${user.name}</p>
+      <p>Phone: ${user.phone}</p>
+      <p>VIP: ${user.vip}</p>
+      <p>Points: ${user.points}</p>
+    `;
+
+          // Append the user card to the container
+          userCardsContainer.appendChild(userCard);
+        } else {
+          // Handle the case where the response is not an object
+          console.error("Error: Invalid response format");
+          alert("Error rendering user card: Invalid response format");
+        }
+      }
+    </script>
+  </body>
+</html>
