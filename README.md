@@ -1,5 +1,5 @@
 This is a NodeJS api for a simple loyality tracking point system, to start:
-
+NOTE: this is in development process and might contain some bugs
 1. Clone the repository
 2. Install dependencies: `npm install`
 3. Start the server dev: `npm run startDev`
